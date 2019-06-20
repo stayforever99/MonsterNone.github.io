@@ -1,38 +1,15 @@
 ---
 title: Hello World
+tags: 文章
+summary: 思念了好几年，终于上线了个人博客hhhh
 ---
-Welcome to [Hexo](https://hexo.io/)! This is your very first post. Check [documentation](https://hexo.io/docs/) for more info. If you get any problems when using Hexo, you can find the answer in [troubleshooting](https://hexo.io/docs/troubleshooting.html) or you can ask me on [GitHub](https://github.com/hexojs/hexo/issues).
 
-## Quick Start
+思念了好几年，终于上线了个人博客hhhh
 
-### Create a new post
+本来想用Wordpress, 但是管理服务器太麻烦还必须买域名，域名又不知道起啥名，算了。
 
-``` bash
-$ hexo new "My New Post"
-```
+现在是使用Hexo静态构建，托管在Github Pages上。
 
-More info: [Writing](https://hexo.io/docs/writing.html)
+能用就行。
 
-### Run server
-
-``` bash
-$ hexo server
-```
-
-More info: [Server](https://hexo.io/docs/server.html)
-
-### Generate static files
-
-``` bash
-$ hexo generate
-```
-
-More info: [Generating](https://hexo.io/docs/generating.html)
-
-### Deploy to remote sites
-
-``` bash
-$ hexo deploy
-```
-
-More info: [Deployment](https://hexo.io/docs/deployment.html)
+> 也有同名公众号

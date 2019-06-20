@@ -1,0 +1,31 @@
+.page-top.animated.fadeInDown
+  .nav
+    li
+      if is_home()
+        a.current(href="/")= __('主页')					
+      else
+        a(href="/")= __('主页')	
+    li
+      if is_archive()
+        a.current(href="/archives")= __('归档')
+      else
+        a(href="/archives")= __('归档')
+    li
+      if is_current('about')
+        a.current(href="/about")= __('关于')			
+      else
+        a(href="/about")= __('关于')
+    li
+      if is_current('links')
+        a.current(href="/links")= __('友链')					
+      else
+        a(href="/links")= __('友链')		
+  .information
+    .back_btn
+      li
+        if is_post()
+          a.fa.fa-chevron-left(onclick="window.history.go(-1)") 
+        else
+          a.fa.fa-chevron-left(onclick="window.history.go(-1)",style="display:none;") 
+    .avatar
+      img(src=theme.avatar)
