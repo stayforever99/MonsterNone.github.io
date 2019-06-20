@@ -5,7 +5,10 @@ tags:
     - IPv6
     - 教程
 summary: 没多大用。
-desc: Android手机LTE使用IPv6
+desc: 
+    - Android
+    - LTE
+    - IPv6
 ---
 
 国内的运营商分配IPv6地址也不是什么新鲜事了，有时候一觉醒来就发现自己接入了“下一代互联网”。当然，安卓手机不会自动启用，这也就是本文存在的意义。

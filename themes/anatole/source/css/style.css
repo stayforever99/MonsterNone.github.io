@@ -696,5 +696,9 @@ a.btn {
 
 .license {
   margin: 30px;
-  font-size: 10px;
+  font-size: 15px;
+}
+
+.post-content {
+  color: rgba(0, 0, 0, 0.75)
 }
