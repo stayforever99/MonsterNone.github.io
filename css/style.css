@@ -693,3 +693,8 @@ a.btn {
     display: grid;
   }
 }
+
+.license {
+  margin: 30px;
+  font-size: 10px;
+}
