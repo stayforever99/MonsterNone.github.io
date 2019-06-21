@@ -99,8 +99,14 @@
 <img src="/2019/06/20/OpenWrt-Mwan3多线多拨/rule.png" title="rule.png">
 
 <blockquote>
-<p>更新：<br>可能需要再新建一个规则 (放在底部) ，将协议设为 <code>all</code> ，<code>策略</code> 为 <code>主路由</code>。</p>
+<p>更新1：<br>可能需要再新建一个规则 (放在底部) ，将协议设为 <code>all</code> ，<code>策略</code> 为 <code>主路由</code>。</p>
 <p>以此来转发udp和其他协议。</p>
+</blockquote>
+<blockquote>
+<p>更新2：</p>
+<h3 id="防火墙设置"><a href="#防火墙设置" class="headerlink" title="防火墙设置"></a>防火墙设置</h3><p>打开 <code>防火墙</code> - <code>Traffic Rules</code>，将第一条 <code>Allow-DHCP-Renew</code> 取消启用。</p>
+<p>设置这个的目的主要是防止LAN口的设备去WAN口宽带那里获取动态IP而不是在路由器这里获取。</p>
+<img src="/2019/06/20/OpenWrt-Mwan3多线多拨/firewall.png" title="firewall.png">
 </blockquote>
 <h2 id="终于设置完了！"><a href="#终于设置完了！" class="headerlink" title="终于设置完了！"></a>终于设置完了！</h2><p>在 <code>状态</code> - <code>负载均衡</code> 里面看下几个WAN口是不是都在线；<code>详细</code> 中看下 <code>policies</code> 是不是想要的效果。</p>
 <img src="/2019/06/20/OpenWrt-Mwan3多线多拨/status.png" title="status.png">
