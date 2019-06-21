@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>树蛙的万物冒险</title>
+  
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="https://monsternone.github.io/"/>
+  <updated>2019-06-21T02:08:13.619Z</updated>
+  <id>https://monsternone.github.io/</id>
+  
+  <author>
+    <name>Monster None</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>OpenWrt Mwan3多线多拨</title>
+    <link href="https://monsternone.github.io/2019/06/20/OpenWrt-Mwan3%E5%A4%9A%E7%BA%BF%E5%A4%9A%E6%8B%A8/"/>
+    <id>https://monsternone.github.io/2019/06/20/OpenWrt-Mwan3多线多拨/</id>
+    <published>2019-06-20T13:23:57.000Z</published>
+    <updated>2019-06-21T02:08:13.619Z</updated>
+    
+    <content type="html"><![CDATA[<p>最近给Phicomm K2刷了OpenWrt (原来OpenWrt驱动有问题，一直用的官改) ，折腾了好一会儿没弄到什么实用的功能 (不实用功能包括IPv6) 。正好家中有两条宽带，一条联通宽带、一条广电宽带，广电的一直吃灰但好歹花了钱也要用上2333。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">斐讯K2 + 官方OpenWrt</span><br><span class="line"></span><br><span class="line">联通宽带50M，双11办的，￥11.11；</span><br><span class="line"></span><br><span class="line">广电宽带10M，和电视一起优惠的，￥50。</span><br></pre></td></tr></table></figure><h3 id="安装Mwan3"><a href="#安装Mwan3" class="headerlink" title="安装Mwan3"></a>安装Mwan3</h3><p>首先要给OpenWrt装上Mwan3，官方固件不自带 (好像？忘了。。) ，移植的固件一般都有。</p><p>在Luci <code>系统</code> - <code>软件包</code> 里面，搜索 <code>mwan</code>，安装 <code>luci-app-mwan3</code>、<code>mwan3</code>、<code>luci-i18n-mwan3-zh-cn</code> (中文支持，可选) </p><img src="/2019/06/20/OpenWrt-Mwan3多线多拨/搜索.png" title="搜索.png"><blockquote><p>如果你从来没有安装过可能需要首先更新软件包列表，可以在 <code>配置</code> 中先改成国内的源：</p><p>将 <code>发行版软件源</code> 中的每一行 <code>/releases/版本/targets/......</code> 前的网址改为 <code>http://mirrors.tuna.tsinghua.edu.cn/lede</code> </p><p>例如：<code>src/gz openwrt_core http://mirrors.tuna.tsinghua.edu.cn/lede/releases/18.06.2/targets/ramips/mt7620/packages</code></p></blockquote><blockquote><p>如果你的OpenWrt是英文版，那顺便安装下 <code>luci-i18n-base-zh-cn</code></p></blockquote><p>都安装好了之后刷新下界面，在 <code>网络</code> 里面会出现 <code>负载均衡</code></p><img src="/2019/06/20/OpenWrt-Mwan3多线多拨/show.png" title="show.png"><h3 id="配置VLAN"><a href="#配置VLAN" class="headerlink" title="配置VLAN"></a>配置VLAN</h3><p>首先把需要多拨的两根 (三根、四根、无数根) 网线插上。一根插在原本的WAN口上，另外一根插在LAN口。</p><p>打开 <code>网络</code> - <code>交换机</code> 界面，这时候就可以清楚地看到我们的两根网线。</p><blockquote><p>我这里是多插了一个树莓派</p></blockquote><img src="/2019/06/20/OpenWrt-Mwan3多线多拨/vlan.png" title="vlan.png"><p>这时候通过原本显示的WAN口和LAN口可以轻松分辨出端口对应的宽带。例如我这里WAN是联通，LAN1是广电。</p><p>如果你分不清谁是谁的话，可以拔掉，刷新，记下 <code>端口状态</code>，插上，对比新的状态。</p><p>好，知道了谁是谁之后就简单了。</p><p>新建一个VLAN规则，名字就写3。</p><p><strong>这时候到了重头戏，划分VLAN。</strong></p><p>网上一些教程写的不是很清楚，一头雾水；这里我教你一个简单的原则。</p><p><strong><em>所有的实际LAN口在同一个 (LAN口专用的) VLAN中 <code>未标记</code></em></strong></p><p><strong><em>所有的实际WAN口各自独立在不同的VLAN中 <code>未标记</code></em></strong></p><p><strong><em>每一条VLAN的CPU端口永远为 <code>已标记</code></em></strong></p><p>也就是说：</p><p><strong>把第二 (三、四…) 条宽带插的端口从LAN口的VLAN中移除 (设置为 <code>关</code>)</strong></p><p><strong>新建一个VLAN，在此VLAN中第二条宽带的LAN口为唯一的 <code>未标记</code> 端口</strong></p><p>解释一下：</p><ol><li>首先由于防火墙的需要，LAN口和WAN口不能放在一起，LAN口可以互联</li><li>由于相同的协议存在相互干扰，所以WAN口不能放在一起 (我也不是很清楚，在实际使用中我把两个WAN口PPPoe和DHCP放在一起没发生问题，就先这么理解吧) </li></ol><p>就是这么简单。具体操作如下：</p><blockquote><p>原有的规则中</p><blockquote><p>WAN为 <code>未标记</code>，其他为 <code>关</code> 的那条，对应原本WAN口，无需改动</p></blockquote><blockquote><p>WAN为 <code>关</code>，其他为 <code>未标记</code> 的那条，对应原本的LAN口，将插宽带的LAN口从中移除，设置为 <code>关</code></p></blockquote></blockquote><blockquote><p>新建的规则中</p><blockquote><p>CPU (eth0) 设置为 <code>已标记</code></p></blockquote><blockquote><p>你插在LAN口的宽带的那个端口，设置为 <code>未标记</code></p></blockquote><blockquote><p>其他口都默认关就行</p></blockquote></blockquote><p>最终如图：</p><blockquote><p>LAN1 和 WAN 是宽带，LAN4是树莓派 (LAN口设备) </p></blockquote><img src="/2019/06/20/OpenWrt-Mwan3多线多拨/vlan-2.png" title="vlan-2.png"><h3 id="设置拨号-DHCP连接网络"><a href="#设置拨号-DHCP连接网络" class="headerlink" title="设置拨号/DHCP连接网络"></a>设置拨号/DHCP连接网络</h3><p>设置好了VLAN之后，需要将两个新的WAN口联网。</p><p><code>网络</code> - <code>接口</code> ，编辑原来的WAN，设置一个原WAN口宽带的联网方式；</p><p>在 <code>高级设置</code> 中，设置网关跃点为 <code>10</code></p><img src="/2019/06/20/OpenWrt-Mwan3多线多拨/jump.png" title="jump.png"><p>新建一个接口，名称随意，例如 <code>WAN2</code>，协议设置为第二条宽带的联网方式，<code>包含以下接口</code> 设置为新建的那条VLAN (<code>eth0.3</code>) </p><img src="/2019/06/20/OpenWrt-Mwan3多线多拨/new.png" title="new.png"><p>然后对应设置一下新接口的联网；网关跃点设置为20 (每一条宽带的跃点都不要相同)。</p><p>保存&amp;应用。回到接口概况看下两个宽带是不是都成功联网了 (分配到了IP地址) 。</p><img src="/2019/06/20/OpenWrt-Mwan3多线多拨/interface.png" title="interface.png"><h3 id="Mwan3设置"><a href="#Mwan3设置" class="headerlink" title="Mwan3设置"></a>Mwan3设置</h3><p>都成功联网了之后，就可以设置Mwan3负载均衡使用不同的网络了。</p><p>在 <code>网络</code> - <code>负载均衡</code> - <code>接口</code> 中，先把所有的删了。</p><p>新建，名称和你宽带1的接口名称一致 (在 <code>网络</code> - <code>接口</code> 里面显示的名字)；</p><p>里面的配置没什么特别要注意的，根据名称自己看情况设置，记得把 <code>启用</code> 设为 <code>是</code> 就好。</p><p>同理新建宽带2的接口WAN2。</p><img src="/2019/06/20/OpenWrt-Mwan3多线多拨/mwan.png" title="mwan.png"><p>看一下跃点数和你之前设置的跃点数是否一致，一致就说明接口名称填写正确了。</p><p>在 <code>成员</code> 中，删除所有，新建，名称可以随意了，例如 <code>wan1_m1</code> <code>wan2_m1</code>。</p><p>选择对应的接口，跃点数留空，比重可以根据你的宽带不同的带宽来填写。比如50M的宽带比重为5，10M的比重为1。</p><img src="/2019/06/20/OpenWrt-Mwan3多线多拨/member.png" title="member.png"><p>在 <code>策略</code> 中，删除所有，新建一个作为负载均衡使用，名称为balance (或者其他)。把你新建的成员加上。备用设为 <code>默认 (使用主路由)</code></p><img src="/2019/06/20/OpenWrt-Mwan3多线多拨/stra.png" title="stra.png"><p>在 <code>规则</code> 中，删除所有，新建一个，名称随意，如果你不知道啥是啥那就把地址/端口都留空；<code>协议</code> 设为 <code>tcp</code> (大部分负载都是TCP)；<code>分配的策略</code> 选择你刚才新建的负载均衡策略；<code>粘滞模式</code> 设为 <code>关</code> ；其他默认就可。</p><img src="/2019/06/20/OpenWrt-Mwan3多线多拨/rule.png" title="rule.png"><blockquote><p>更新1：<br>可能需要再新建一个规则 (放在底部) ，将协议设为 <code>all</code> ，<code>策略</code> 为 <code>主路由</code>。</p><p>以此来转发udp和其他协议。</p></blockquote><blockquote><p>更新2：</p><h3 id="防火墙设置"><a href="#防火墙设置" class="headerlink" title="防火墙设置"></a>防火墙设置</h3><p>打开 <code>防火墙</code> - <code>Traffic Rules</code>，将第一条 <code>Allow-DHCP-Renew</code> 取消启用。</p><p>设置这个的目的主要是防止LAN口的设备去WAN口宽带那里获取动态IP而不是在路由器这里获取。</p><img src="/2019/06/20/OpenWrt-Mwan3多线多拨/firewall.png" title="firewall.png"></blockquote><h2 id="终于设置完了！"><a href="#终于设置完了！" class="headerlink" title="终于设置完了！"></a>终于设置完了！</h2><p>在 <code>状态</code> - <code>负载均衡</code> 里面看下几个WAN口是不是都在线；<code>详细</code> 中看下 <code>policies</code> 是不是想要的效果。</p><img src="/2019/06/20/OpenWrt-Mwan3多线多拨/status.png" title="status.png"><h3 id="测试一下"><a href="#测试一下" class="headerlink" title="测试一下"></a>测试一下</h3><p>主要是测试一下你有没有把原本好用的网络搞坏233333</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># pi @ raspberrypi in ~ [23:38:24] </span></span><br><span class="line">$ python3 speedtest.py</span><br><span class="line">Retrieving speedtest.net configuration...</span><br><span class="line">Testing from China Unicom Liaoning (112.x.x.x)...</span><br><span class="line">Retrieving speedtest.net server list...</span><br><span class="line">Selecting best server based on ping...</span><br><span class="line">Hosted by China Telecom Wuhan Branch (Wuhan) [646.43 km]: 31.35 ms</span><br><span class="line">Testing download speed................................................................................</span><br><span class="line">Download: <span class="string">"57.37 Mbit/s"</span></span><br><span class="line">Testing upload speed......................................................................................................</span><br><span class="line">Upload: 9.94 Mbit/s</span><br><span class="line"></span><br><span class="line"><span class="comment"># pi @ raspberrypi in ~ [23:39:11] </span></span><br><span class="line">$ python3 speedtest.py</span><br><span class="line">Retrieving speedtest.net configuration...</span><br><span class="line">Testing from China Unicom Liaoning (112.x.x.x)...</span><br><span class="line">Retrieving speedtest.net server list...</span><br><span class="line">Selecting best server based on ping...</span><br><span class="line">Hosted by China Telecom Wuhan Branch-2 (Wuhan) [646.43 km]: 31.619 ms</span><br><span class="line">Testing download speed................................................................................</span><br><span class="line">Download: <span class="string">"76.07 Mbit/s"</span></span><br><span class="line">Testing upload speed......................................................................................................</span><br><span class="line">Upload: 8.06 Mbit/s</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;最近给Phicomm K2刷了OpenWrt (原来OpenWrt驱动有问题，一直用的官改) ，折腾了好一会儿没弄到什么实用的功能 (不实用功能包括IPv6)
+        
+      
+    
+    </summary>
+    
+    
+      <category term="OpenWrt" scheme="https://monsternone.github.io/tags/OpenWrt/"/>
+    
+      <category term="教程" scheme="https://monsternone.github.io/tags/%E6%95%99%E7%A8%8B/"/>
+    
+      <category term="路由器" scheme="https://monsternone.github.io/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>4G网络接入IPv6(安卓)</title>
+    <link href="https://monsternone.github.io/2019/06/20/Android%E6%8E%A5%E5%85%A5IPv6/"/>
+    <id>https://monsternone.github.io/2019/06/20/Android接入IPv6/</id>
+    <published>2019-06-20T09:41:32.000Z</published>
+    <updated>2019-06-20T13:26:31.966Z</updated>
+    
+    <content type="html"><![CDATA[<p>国内的运营商分配IPv6地址也不是什么新鲜事了，有时候一觉醒来就发现自己接入了“下一代互联网”。当然，安卓手机不会自动启用，这也就是本文存在的意义。</p><h3 id="你需要"><a href="#你需要" class="headerlink" title="你需要"></a>你需要</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">一台安卓手机</span><br></pre></td></tr></table></figure><blockquote><p>由于国内手机系统各式各样我就不贴图了，贴了也没啥用。<del>才不是因为贴图很麻烦</del></p></blockquote><p>打开 <code>设置</code>，找到设置APN的地方。它可能叫 <code>接入点名称</code>、<code>APN设置</code>。找不到在设置里的搜索 <code>APN</code>/<code>接入点</code>/<code>移动网络</code>，还是找不到… “型号+APN” 问下搜索引擎吧。</p><p>然后修改你现在正在使用的APN，往下翻，找到 <code>APN协议</code>，原来应该是 <code>IPv4</code>，改成 <code>IPv4/IPv6</code>。当然<del>作为真的勇士</del>你也可以选择单IPv6。</p><p>保存。好了，就这么简单。</p><p>把流量关了，过十几秒再打开。</p><p>然后在 <code>关于手机</code> (– <code>状态消息</code> )里面可以看到有没有分配IPv6地址。</p><p><a href="http://test-ipv6.com" target="_blank" rel="noopener">http://test-ipv6.com</a> 。<del>截图，发朋友圈</del>。收工。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;国内的运营商分配IPv6地址也不是什么新鲜事了，有时候一觉醒来就发现自己接入了“下一代互联网”。当然，安卓手机不会自动启用，这也就是本文存在的意义。&lt;/p&gt;
+&lt;h3 id=&quot;你需要&quot;&gt;&lt;a href=&quot;#你需要&quot; class=&quot;headerlink&quot;
+        
+      
+    
+    </summary>
+    
+    
+      <category term="教程" scheme="https://monsternone.github.io/tags/%E6%95%99%E7%A8%8B/"/>
+    
+      <category term="IPv6" scheme="https://monsternone.github.io/tags/IPv6/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Hello World</title>
+    <link href="https://monsternone.github.io/2019/06/20/hello-world/"/>
+    <id>https://monsternone.github.io/2019/06/20/hello-world/</id>
+    <published>2019-06-20T09:00:00.000Z</published>
+    <updated>2019-06-20T10:49:19.564Z</updated>
+    
+    <content type="html"><![CDATA[<p>思念了好几年，终于上线了个人博客hhhh</p><p>本来想用Wordpress, 但是管理服务器太麻烦还必须买域名，域名又不知道起啥名，算了。</p><p>现在是使用Hexo静态构建，托管在Github Pages上。</p><p>能用就行。</p><blockquote><p>也有同名公众号</p></blockquote>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;思念了好几年，终于上线了个人博客hhhh&lt;/p&gt;
+&lt;p&gt;本来想用Wordpress, 但是管理服务器太麻烦还必须买域名，域名又不知道起啥名，算了。&lt;/p&gt;
+&lt;p&gt;现在是使用Hexo静态构建，托管在Github
+        
+      
+    
+    </summary>
+    
+    
+      <category term="文章" scheme="https://monsternone.github.io/tags/%E6%96%87%E7%AB%A0/"/>
+    
+  </entry>
+  
+</feed>
