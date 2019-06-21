@@ -217,6 +217,7 @@ a:hover, a:active {
   margin-right: 3px;
 }
 .sidebar .social-links li {
+  position: relative;
   display: inline;
   padding: 0 4px;
   line-height: 0;
@@ -226,6 +227,20 @@ a:hover, a:active {
 }
 .sidebar .social-links a:hover {
   color: #4786D6;
+}
+.sidebar .social-imgs {
+  position: absolute;
+  top: 20px;
+  left: -32px;
+  width: 80px;
+  max-width: none;
+  visibility: hidden;
+  opacity:0;
+}
+.sidebar .wechat-hover:hover .social-imgs{
+  visibility: visible;
+  opacity:1;
+  transition: all 1s ease;
 }
 
 .post {

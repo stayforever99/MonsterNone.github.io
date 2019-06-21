@@ -82,8 +82,21 @@ deploy:
   repo: git@github.com:MonsterNone/MonsterNone.github.io.git 
   branch: master
 
+# 支持图片文件夹
 archive_generator:
   per_page: 0  
   yearly: false
   monthly: false
   daily: false
+
+# rss feed
+feed:
+  type: atom
+  path: atom.xml
+  limit: 20
+  hub:
+  content: true
+  content_limit: 140
+  content_limit_delim: ' '
+  order_by: -date
+  icon: /images/favicon.png
