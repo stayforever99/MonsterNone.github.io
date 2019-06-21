@@ -98,6 +98,10 @@
 <p>在 <code>规则</code> 中，删除所有，新建一个，名称随意，如果你不知道啥是啥那就把地址/端口都留空；<code>协议</code> 设为 <code>tcp</code> (大部分负载都是TCP)；<code>分配的策略</code> 选择你刚才新建的负载均衡策略；<code>粘滞模式</code> 设为 <code>关</code> ；其他默认就可。</p>
 <img src="/2019/06/20/OpenWrt-Mwan3多线多拨/rule.png" title="rule.png">
 
+<blockquote>
+<p>更新：<br>可能需要再新建一个规则 (放在底部) ，将协议设为 <code>all</code> ，<code>策略</code> 为 <code>主路由</code>。</p>
+<p>以此来转发udp和其他协议。</p>
+</blockquote>
 <h2 id="终于设置完了！"><a href="#终于设置完了！" class="headerlink" title="终于设置完了！"></a>终于设置完了！</h2><p>在 <code>状态</code> - <code>负载均衡</code> 里面看下几个WAN口是不是都在线；<code>详细</code> 中看下 <code>policies</code> 是不是想要的效果。</p>
 <img src="/2019/06/20/OpenWrt-Mwan3多线多拨/status.png" title="status.png">
 
