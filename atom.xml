@@ -38,9 +38,9 @@
     </summary>
     
     
-      <category term="OpenWrt" scheme="https://monsternone.github.io/tags/OpenWrt/"/>
-    
       <category term="教程" scheme="https://monsternone.github.io/tags/%E6%95%99%E7%A8%8B/"/>
+    
+      <category term="OpenWrt" scheme="https://monsternone.github.io/tags/OpenWrt/"/>
     
       <category term="路由器" scheme="https://monsternone.github.io/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/"/>
     
@@ -69,9 +69,9 @@
     </summary>
     
     
-      <category term="教程" scheme="https://monsternone.github.io/tags/%E6%95%99%E7%A8%8B/"/>
-    
       <category term="IPv6" scheme="https://monsternone.github.io/tags/IPv6/"/>
+    
+      <category term="教程" scheme="https://monsternone.github.io/tags/%E6%95%99%E7%A8%8B/"/>
     
   </entry>
   
