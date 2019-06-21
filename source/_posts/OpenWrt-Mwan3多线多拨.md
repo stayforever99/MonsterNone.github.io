@@ -153,10 +153,19 @@ desc:
 
 {% asset_img rule.png rule.png %}
 
-> 更新：
+> 更新1：
 > 可能需要再新建一个规则 (放在底部) ，将协议设为 `all` ，`策略` 为 `主路由`。
 >
 > 以此来转发udp和其他协议。
+
+> 更新2：
+> ### 防火墙设置
+> 
+> 打开 `防火墙` - `Traffic Rules`，将第一条 `Allow-DHCP-Renew` 取消启用。
+>
+> 设置这个的目的主要是防止LAN口的设备去WAN口宽带那里获取动态IP而不是在路由器这里获取。
+>
+> {% asset_img firewall.png firewall.png %}
 
 ## 终于设置完了！
 
